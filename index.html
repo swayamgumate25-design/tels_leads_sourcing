@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leads Data Search</title>
+
+    <!-- Google Fonts: Inter & Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- External Libraries for Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Leads Search</h1>
+            <p>Find your next potential connection</p>
+        </header>
+
+        <!-- Search Form Card -->
+        <div class="card search-card">
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user icon"></i>
+                        <input type="text" id="name" placeholder="e.g. John Doe">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-location-dot icon"></i>
+                        <input type="text" id="location" placeholder="e.g. New York, USA">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="technology">Technology</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-code icon"></i>
+                        <input type="text" id="technology" list="tech-options"
+                            placeholder="e.g. JavaScript or Type anything">
+                        <datalist id="tech-options">
+                            <option value="JavaScript">
+                            <option value="Python">
+                            <option value="Java">
+                            <option value="React">
+                            <option value="Node.js">
+                            <option value=".NET">
+                            <option value="PHP">
+                            <option value="Go">
+                        </datalist>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Upload File (Optional)</label>
+                    <div class="file-upload-wrapper" id="fileUploadWrapper">
+                        <input type="file" id="fileInput" accept=".csv, .xlsx, .xls, .pdf" hidden>
+                        <div class="file-upload-content">
+                            <i class="fa-solid fa-cloud-arrow-up file-icon"></i>
+                            <p id="fileLabelText">Click or Drag to Upload PDF, CSV, Excel</p>
+                            <i class="fa-solid fa-check file-success-icon hidden"></i>
+                            <button type="button" id="removeFileBtn" class="hidden" title="Remove file">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="fileName" class="file-name hidden"></div>
+                </div>
+
+                <button type="submit" id="searchBtn" class="btn-primary">
+                    <span class="btn-text">Search</span>
+                    <i class="fa-solid fa-magnifying-glass btn-icon"></i>
+                    <div class="spinner hidden"></div>
+                </button>
+            </form>
+        </div>
+
+        <!-- Searching Animation Overlay (Optional, or inline) -->
+        <div id="loadingState" class="hidden">
+            <div class="loader"></div>
+            <p>Searching database...</p>
+        </div>
+
+        <!-- Results Section -->
+        <div id="resultsSection" class="hidden">
+            <div class="card results-card">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-table-list"></i> Search Results</h2>
+                    <div class="export-actions">
+                        <button onclick="downloadCSV()" class="btn-sm btn-outline" title="Download CSV">
+                            <i class="fa-solid fa-file-csv"></i> CSV
+                        </button>
+                        <button onclick="downloadExcel()" class="btn-sm btn-outline" title="Download Excel">
+                            <i class="fa-solid fa-file-excel"></i> Excel
+                        </button>
+                        <button onclick="downloadPDF()" class="btn-sm btn-outline" title="Download PDF">
+                            <i class="fa-solid fa-file-pdf"></i> PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table id="resultsTable">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Location</th>
+                                <th>Technology</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows injected here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Data / Redrob Fallback Section -->
+        <div id="noDataSection" class="hidden">
+            <div class="card no-data-card">
+                <div class="no-data-content">
+                    <div class="icon-circle">
+                        <i class="fa-solid fa-magnifying-glass-minus"></i>
+                    </div>
+                    <h3>No matching leads found</h3>
+                    <p>We couldn't find any results in our sheets or your uploaded file.</p>
+
+                    <button id="redrobSearchBtn" class="btn-secondary">
+                        Do you want me to search on Redrob?
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Notification Container for Errors/Success -->
+    <div id="notificationContainer"></div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
